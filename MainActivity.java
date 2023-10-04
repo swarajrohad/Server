@@ -1,10 +1,8 @@
-package com.example.myapplication;
+package com.trial.nearu;
+//package com.example.myapplication;
 
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
-
-import static java.lang.Integer.*;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -41,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
     Bitmap bitmap;
+    String ip;
     volatile String str;
     int a=0;
     ByteArrayOutputStream byteArrayOutputStream= new ByteArrayOutputStream();
@@ -61,17 +60,17 @@ public class MainActivity extends AppCompatActivity {
         editText = findViewById(R.id.editTextText);
         textView = findViewById(R.id.textView);
         imageView = findViewById(R.id.imageView);
-        javaclient j = new javaclient();
-        Thread t1 = new Thread(j);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (bitmap != null ) {
+                ip = editText.getText().toString();
+                if (bitmap != null && ip!=null) {
                     try {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-                        t1.start();
-                    } catch (Exception e) {
-                        Toast.makeText(MainActivity.this, e.getLocalizedMessage() + "bsdk image select krle", Toast.LENGTH_SHORT).show();
+                        new Thread(new javaclient()).start();
+                    }
+                    catch (Exception e){
+                        Toast.makeText(MainActivity.this, "inbutton "+e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{
@@ -118,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
                 byte [] data = new byte [1024];
                 int nRead;
-                client = new Socket("192.168.141.24", 5555);
+                client = new Socket(ip, 5555);
                 out = client.getOutputStream();
                 is = new BufferedInputStream(client.getInputStream());
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -196,5 +195,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        }
+    }
 }
