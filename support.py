@@ -1,0 +1,39 @@
+
+from DeepImageSearch import Load_Data, Search_Setup
+
+def save_image(url_,file_bytes):
+    image_name = url_[38:]
+    image_name = image_name.replace("/"," ")
+    image_name = image_name.replace("?","{")+(".jpg")
+    file_bytes = file_bytes[:-5]
+    with open("all\\"+image_name,"wb") as f:
+        f.write(file_bytes)
+    image_list = Load_Data().from_folder(['C:\\Users\\91820\\Desktop\\train\\all'])
+    st = Search_Setup(image_list, model_name="vgg19", pretrained=True, image_count=None)
+    st.add_images_to_index(['C:\\Users\\91820\\Desktop\\train\\all\\'+image_name])
+    print("file saved\n",decode_name(image_name))
+
+def decode_name(file_path):
+    raw = file_path.replace(" ","/")
+    raw = raw.replace("{","?")
+    raw = "https://firebasestorage.googleapis.com"+raw[:-4]
+    return raw
+
+def find_similar_image(filename):
+    image_list = Load_Data().from_folder(['all'])
+    st = Search_Setup(image_list, model_name="vgg19", pretrained=True, image_count=None)
+    st.run_index()
+    obj = st.get_similar_images(image_path=filename, number_of_images=3)
+    matched_uri = []
+    temp=""
+    for path in obj.values():
+        for i in path[::-1]:
+            if i == "\\":
+                break
+            temp += i
+        matched_uri.append(decode_name(temp[::-1]))
+    return matched_uri 
+    
+
+if __name__ == "__main__":
+    find_similar_image("receive\\samdoc.jpg")
