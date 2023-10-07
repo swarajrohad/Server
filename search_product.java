@@ -98,7 +98,7 @@ public class search_product extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                client = new Socket("192.168.1.8",5555);
+                client = new Socket("192.168.1.10",5555);
                 in = client.getInputStream();
                 out = client.getOutputStream();
                 data = new byte[1024];
@@ -107,16 +107,10 @@ public class search_product extends AppCompatActivity {
                 in.read();
                 out.write(byteArrayOutputStream.toByteArray());
                 out.write("<END>".getBytes(StandardCharsets.UTF_8));
+
                 //uri1
                 int nRead =0;
-                finalNRead = nRead;
-                in.read(data);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(search_product.this, ":"+String.valueOf(finalNRead), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                nRead = in.read(data);
                 String  uri1 = new String(data,0,nRead);
                 out.write("1".getBytes(StandardCharsets.UTF_8));
                 //uri2
@@ -127,7 +121,12 @@ public class search_product extends AppCompatActivity {
                 nRead = in.read(data,0,data.length);
                 String  uri3 = new String(data,0,nRead);
                 out.write("1".getBytes(StandardCharsets.UTF_8));
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        editText.setText(uri1);
+                    }
+                });
             } catch (Exception e) {
                 runOnUiThread(new Runnable() {
                     @Override
