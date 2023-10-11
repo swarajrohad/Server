@@ -11,7 +11,7 @@ def create():
     global server
     global st 
     server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-    server.bind(("192.168.1.8",5555))
+    server.bind(("192.168.1.11",5555))
     server.listen()
     
 def accepting():
@@ -58,22 +58,26 @@ def serve_customer():
     done = False
     client.send("1".encode())
     while not done:
-        print(len(file_bytes))
-        data = client.recv(1024)
         if (file_bytes[-5:] == b"<END>"):
             done = True
         else:
+            data = client.recv(1024)
             file_bytes += data
 
     with open("receive\\Received.jpg","wb") as f:
         f.write(file_bytes)
+
     uri = support.find_similar_image("receive\\Received.jpg")
+
     client.send(uri[0].encode())
-    client.recv(1024)
-    client.send(uri[0].encode())
-    client.recv(1024)    
-    client.send(uri[0].encode())
-    client.recv(1024)
+    print(client.recv(1024))
+
+    client.send(uri[1].encode())
+    print(client.recv(1024))
+
+    client.send(uri[2].encode())
+    print(client.recv(1024))
+
     client.close()
     
 
